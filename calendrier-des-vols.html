@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendrier des Vols – Depuis La Réunion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --orange: #F47B20;
+      --orange-light: #FF9A4D;
+      --orange-pale: #FFF3E8;
+      --blue: #1A3A6B;
+      --blue-mid: #2C5AA0;
+      --blue-light: #4A80CC;
+      --blue-pale: #EBF1FB;
+      --white: #FFFFFF;
+      --gray: #F5F6FA;
+      --text: #1A1A2E;
+      --text-light: #6B7280;
+      --border: #E2E8F0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--gray);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAVIGATION ── */
+    nav {
+      background: var(--blue);
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      box-shadow: 0 2px 16px rgba(26,58,107,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--white);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-logo span { color: var(--orange); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav ul a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav ul a:hover, nav ul a.active { color: var(--orange-light); }
+
+    /* ── HERO BANNER ── */
+    .hero {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 55%, var(--orange) 100%);
+      padding: 3.5rem 2.5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '✈';
+      font-size: 18rem;
+      position: absolute;
+      right: -2rem;
+      top: -3rem;
+      opacity: 0.05;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      color: var(--white);
+      margin-bottom: 0.6rem;
+    }
+
+    .hero h1 span { color: var(--orange-light); }
+
+    .hero p {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin: 0 auto 1.6rem;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--orange);
+      color: var(--white);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.3rem 1rem;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── FILTERS ── */
+    .filters-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 2.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filters-bar label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 0.3rem;
+    }
+
+    .filters-bar select, .filters-bar input {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--white);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .filters-bar select:focus, .filters-bar input:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+
+    .btn-reset {
+      margin-left: auto;
+      background: var(--orange-pale);
+      color: var(--orange);
+      border: 1.5px solid var(--orange);
+      border-radius: 8px;
+      padding: 0.45rem 1.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-reset:hover { background: var(--orange); color: var(--white); }
+
+    /* ── MAIN CONTENT ── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+    }
+
+    /* ── STATS ROW ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-top: 3px solid var(--orange);
+    }
+
+    .stat-card .number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .stat-card .label {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 0.2rem;
+    }
+
+    /* ── ZONE SECTION ── */
+    .zone-section {
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .zone-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .zone-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .zone-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      color: var(--blue);
+    }
+
+    .zone-count {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      background: var(--gray);
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+    }
+
+    /* ── TABLE ── */
+    .table-wrapper {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--blue);
+    }
+
+    thead th {
+      color: var(--white);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 0.9rem 1.2rem;
+      text-align: left;
+    }
+
+    thead th:first-child { border-radius: 0; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--orange-pale); }
+
+    tbody td {
+      padding: 0.85rem 1.2rem;
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .dest-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .flag { font-size: 1.3rem; }
+
+    .dest-name {
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    .dest-country {
+      font-size: 0.78rem;
+      color: var(--text-light);
+    }
+
+    .airline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--blue-pale);
+      color: var(--blue-mid);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .days-cell {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .day-pill {
+      background: var(--orange-pale);
+      color: var(--orange);
+      border: 1px solid var(--orange-light);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 5px;
+    }
+
+    .time-cell {
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .duration-cell {
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+
+    .direct-badge {
+      background: #D1FAE5;
+      color: #065F46;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 5px;
+    }
+
+    .indirect-badge {
+      background: #FEF3C7;
+      color: #92400E;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 5px;
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+      margin-top: 2rem;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .legend-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    /* ── NOTE ── */
+    .note {
+      background: var(--blue-pale);
+      border-left: 4px solid var(--blue-mid);
+      border-radius: 0 10px 10px 0;
+      padding: 1rem 1.3rem;
+      margin-top: 2rem;
+      font-size: 0.87rem;
+      color: var(--blue);
+    }
+
+    .note strong { color: var(--blue); }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--blue);
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.82rem;
+      margin-top: 3rem;
+    }
+
+    footer span { color: var(--orange-light); }
+
+    @media (max-width: 768px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      nav ul { display: none; }
+      .hero h1 { font-size: 1.8rem; }
+      .filters-bar { gap: 0.6rem; }
+      .btn-reset { margin-left: 0; }
+      thead th:nth-child(4), tbody td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-logo">Île <span>Départ</span></div>
+  <ul>
+    <li><a href="#">Accueil</a></li>
+    <li><a href="#">Destinations</a></li>
+    <li><a href="#">Compagnies</a></li>
+    <li><a href="#" class="active">Calendrier des Vols</a></li>
+    <li><a href="#">Préparer son Voyage</a></li>
+    <li><a href="#">À Propos</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Aéroport Roland Garros – La Réunion</div>
+  <h1>Calendrier des <span>Vols</span></h1>
+  <p>Tous les vols réguliers au départ de La Réunion, organisés par destination avec jours et horaires.</p>
+</div>
+
+<!-- FILTERS -->
+<div class="filters-bar">
+  <label>Zone :</label>
+  <select id="filterZone" onchange="filterTable()">
+    <option value="">Toutes</option>
+    <option value="ocean-indien">🌊 Océan Indien</option>
+    <option value="afrique">🌍 Afrique</option>
+    <option value="asie">🌏 Asie</option>
+    <option value="europe">🇪🇺 Europe</option>
+  </select>
+
+  <label>Compagnie :</label>
+  <select id="filterAirline" onchange="filterTable()">
+    <option value="">Toutes</option>
+    <option value="Air Austral">Air Austral</option>
+    <option value="Air France">Air France</option>
+    <option value="Air Madagascar">Air Madagascar</option>
+    <option value="Corsair">Corsair</option>
+    <option value="Kenya Airways">Kenya Airways</option>
+    <option value="Emirates">Emirates</option>
+    <option value="Air Mauritius">Air Mauritius</option>
+  </select>
+
+  <label>Type :</label>
+  <select id="filterType" onchange="filterTable()">
+    <option value="">Tous</option>
+    <option value="Direct">Direct</option>
+    <option value="Avec escale">Avec escale</option>
+  </select>
+
+  <button class="btn-reset" onclick="resetFilters()">↺ Réinitialiser</button>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="number">24</div>
+      <div class="label">Destinations</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">7</div>
+      <div class="label">Compagnies</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">4</div>
+      <div class="label">Zones géographiques</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">38</div>
+      <div class="label">Vols / semaine</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ OCÉAN INDIEN ═══════════════════════════════ -->
+  <div class="zone-section" data-zone="ocean-indien">
+    <div class="zone-header">
+      <div class="zone-icon" style="background:#EBF6FF;">🌊</div>
+      <div class="zone-title">Océan Indien</div>
+      <div class="zone-count">8 destinations</div>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Destination</th>
+            <th>Compagnie</th>
+            <th>Jours de vol</th>
+            <th>Départ (heure locale)</th>
+            <th>Durée</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-airline="Air Austral" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇲🇺</span><div><div class="dest-name">Maurice</div><div class="dest-country">Île Maurice</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Mer</span><span class="day-pill">Ven</span><span class="day-pill">Dim</span></div></td>
+            <td class="time-cell">10h15 → 11h30</td>
+            <td class="duration-cell">1h15</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air Mauritius" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇲🇺</span><div><div class="dest-name">Maurice</div><div class="dest-country">Île Maurice</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Mauritius</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mar</span><span class="day-pill">Jeu</span><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">14h00 → 15h20</td>
+            <td class="duration-cell">1h20</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air Austral" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇸🇨</span><div><div class="dest-name">Mahé</div><div class="dest-country">Seychelles</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mar</span><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">08h30 → 11h45</td>
+            <td class="duration-cell">3h15</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air Austral" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇲🇬</span><div><div class="dest-name">Antananarivo</div><div class="dest-country">Madagascar</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Mer</span><span class="day-pill">Ven</span></div></td>
+            <td class="time-cell">09h00 → 11h30</td>
+            <td class="duration-cell">2h30</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air Madagascar" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇲🇬</span><div><div class="dest-name">Antananarivo</div><div class="dest-country">Madagascar</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Madagascar</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mar</span><span class="day-pill">Jeu</span></div></td>
+            <td class="time-cell">11h00 → 13h30</td>
+            <td class="duration-cell">2h30</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air Austral" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇾🇹</span><div><div class="dest-name">Mamoudzou</div><div class="dest-country">Mayotte</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Mar</span><span class="day-pill">Mer</span><span class="day-pill">Jeu</span><span class="day-pill">Ven</span><span class="day-pill">Sam</span><span class="day-pill">Dim</span></div></td>
+            <td class="time-cell">07h30 → 10h00</td>
+            <td class="duration-cell">2h30</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air Austral" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇲🇻</span><div><div class="dest-name">Malé</div><div class="dest-country">Maldives</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">08h00 → 18h30</td>
+            <td class="duration-cell">~10h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+          <tr data-airline="Air Austral" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇰🇲</span><div><div class="dest-name">Moroni</div><div class="dest-country">Comores</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mer</span><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">09h45 → 12h30</td>
+            <td class="duration-cell">2h45</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ AFRIQUE ═══════════════════════════════ -->
+  <div class="zone-section" data-zone="afrique">
+    <div class="zone-header">
+      <div class="zone-icon" style="background:#FFF7ED;">🌍</div>
+      <div class="zone-title">Afrique</div>
+      <div class="zone-count">4 destinations</div>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Destination</th>
+            <th>Compagnie</th>
+            <th>Jours de vol</th>
+            <th>Départ (heure locale)</th>
+            <th>Durée</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-airline="Air Austral" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇿🇦</span><div><div class="dest-name">Johannesburg</div><div class="dest-country">Afrique du Sud</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Jeu</span><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">10h30 → 16h00</td>
+            <td class="duration-cell">5h30</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Kenya Airways" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇰🇪</span><div><div class="dest-name">Nairobi</div><div class="dest-country">Kenya</div></div></div></td>
+            <td><span class="airline-badge">✈ Kenya Airways</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mar</span><span class="day-pill">Ven</span></div></td>
+            <td class="time-cell">09h00 → 19h30</td>
+            <td class="duration-cell">~10h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+          <tr data-airline="Air Austral" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇲🇿</span><div><div class="dest-name">Maputo</div><div class="dest-country">Mozambique</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">08h15 → 17h45</td>
+            <td class="duration-cell">~9h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+          <tr data-airline="Air France" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇹🇿</span><div><div class="dest-name">Dar es Salaam</div><div class="dest-country">Tanzanie</div></div></div></td>
+            <td><span class="airline-badge">✈ Air France</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mer</span><span class="day-pill">Dim</span></div></td>
+            <td class="time-cell">10h00 → 20h30</td>
+            <td class="duration-cell">~10h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ ASIE ═══════════════════════════════ -->
+  <div class="zone-section" data-zone="asie">
+    <div class="zone-header">
+      <div class="zone-icon" style="background:#F0FFF4;">🌏</div>
+      <div class="zone-title">Asie</div>
+      <div class="zone-count">4 destinations</div>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Destination</th>
+            <th>Compagnie</th>
+            <th>Jours de vol</th>
+            <th>Départ (heure locale)</th>
+            <th>Durée</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-airline="Emirates" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇹🇭</span><div><div class="dest-name">Bangkok</div><div class="dest-country">Thaïlande</div></div></div></td>
+            <td><span class="airline-badge">✈ Emirates</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Mer</span><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">22h00 → +1 17h30</td>
+            <td class="duration-cell">~14h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+          <tr data-airline="Air France" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇮🇳</span><div><div class="dest-name">Mumbai</div><div class="dest-country">Inde</div></div></div></td>
+            <td><span class="airline-badge">✈ Air France</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mar</span><span class="day-pill">Ven</span><span class="day-pill">Dim</span></div></td>
+            <td class="time-cell">21h30 → +1 14h00</td>
+            <td class="duration-cell">~12h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+          <tr data-airline="Emirates" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇱🇰</span><div><div class="dest-name">Colombo</div><div class="dest-country">Sri Lanka</div></div></div></td>
+            <td><span class="airline-badge">✈ Emirates</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mer</span><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">22h00 → +1 13h45</td>
+            <td class="duration-cell">~11h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+          <tr data-airline="Emirates" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇦🇪</span><div><div class="dest-name">Dubaï</div><div class="dest-country">Émirats Arabes Unis</div></div></div></td>
+            <td><span class="airline-badge">✈ Emirates</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Mar</span><span class="day-pill">Mer</span><span class="day-pill">Jeu</span><span class="day-pill">Ven</span><span class="day-pill">Sam</span><span class="day-pill">Dim</span></div></td>
+            <td class="time-cell">22h00 → +1 06h00</td>
+            <td class="duration-cell">7h</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ EUROPE ═══════════════════════════════ -->
+  <div class="zone-section" data-zone="europe">
+    <div class="zone-header">
+      <div class="zone-icon" style="background:#F5F3FF;">🇪🇺</div>
+      <div class="zone-title">France & Europe</div>
+      <div class="zone-count">4 destinations</div>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Destination</th>
+            <th>Compagnie</th>
+            <th>Jours de vol</th>
+            <th>Départ (heure locale)</th>
+            <th>Durée</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-airline="Air France" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇫🇷</span><div><div class="dest-name">Paris CDG</div><div class="dest-country">France</div></div></div></td>
+            <td><span class="airline-badge">✈ Air France</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Mar</span><span class="day-pill">Mer</span><span class="day-pill">Jeu</span><span class="day-pill">Ven</span><span class="day-pill">Sam</span><span class="day-pill">Dim</span></div></td>
+            <td class="time-cell">21h15 → +1 08h30</td>
+            <td class="duration-cell">11h15</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Corsair" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇫🇷</span><div><div class="dest-name">Paris Orly</div><div class="dest-country">France</div></div></div></td>
+            <td><span class="airline-badge">✈ Corsair</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mar</span><span class="day-pill">Jeu</span><span class="day-pill">Sam</span></div></td>
+            <td class="time-cell">20h00 → +1 07h30</td>
+            <td class="duration-cell">11h30</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air Austral" data-type="Direct">
+            <td><div class="dest-cell"><span class="flag">🇫🇷</span><div><div class="dest-name">Paris CDG</div><div class="dest-country">France</div></div></div></td>
+            <td><span class="airline-badge">✈ Air Austral</span></td>
+            <td><div class="days-cell"><span class="day-pill">Mer</span><span class="day-pill">Ven</span><span class="day-pill">Dim</span></div></td>
+            <td class="time-cell">22h30 → +1 09h45</td>
+            <td class="duration-cell">11h15</td>
+            <td><span class="direct-badge">Direct</span></td>
+          </tr>
+          <tr data-airline="Air France" data-type="Avec escale">
+            <td><div class="dest-cell"><span class="flag">🇬🇧</span><div><div class="dest-name">Londres</div><div class="dest-country">Royaume-Uni</div></div></div></td>
+            <td><span class="airline-badge">✈ Air France</span></td>
+            <td><div class="days-cell"><span class="day-pill">Lun</span><span class="day-pill">Mer</span><span class="day-pill">Ven</span></div></td>
+            <td class="time-cell">21h15 → +1 12h00</td>
+            <td class="duration-cell">~14h</td>
+            <td><span class="indirect-badge">Avec escale</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LÉGENDE -->
+  <div class="legend">
+    <span class="legend-title">Légende :</span>
+    <div class="legend-item"><span class="direct-badge">Direct</span> Vol sans escale</div>
+    <div class="legend-item"><span class="indirect-badge">Avec escale</span> Vol avec une ou plusieurs escales</div>
+    <div class="legend-item">⏰ Horaires en heure locale de La Réunion (UTC+4)</div>
+    <div class="legend-item">+1 = arrivée le lendemain</div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note">
+    <strong>📌 Information :</strong> Les horaires indiqués sont des exemples représentatifs des rotations habituelles. Les jours et horaires réels peuvent varier selon les saisons et les programmations des compagnies. Consultez directement les sites des compagnies pour réserver ou confirmer les vols.
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Île Départ – Site réalisé dans le cadre du <span>CCF 2 – BTS Tourisme GIT</span></p>
+</footer>
+
+<script>
+  function filterTable() {
+    const zone = document.getElementById('filterZone').value;
+    const airline = document.getElementById('filterAirline').value;
+    const type = document.getElementById('filterType').value;
+
+    // Filtrage des zones entières
+    document.querySelectorAll('.zone-section').forEach(section => {
+      if (zone && section.dataset.zone !== zone) {
+        section.classList.add('hidden');
+      } else {
+        section.classList.remove('hidden');
+
+        // Filtrage des lignes à l'intérieur
+        section.querySelectorAll('tbody tr').forEach(row => {
+          const rowAirline = row.dataset.airline || '';
+          const rowType = row.dataset.type || '';
+          const airlineOk = !airline || rowAirline === airline;
+          const typeOk = !type || rowType === type;
+          row.classList.toggle('hidden', !(airlineOk && typeOk));
+        });
+      }
+    });
+  }
+
+  function resetFilters() {
+    document.getElementById('filterZone').value = '';
+    document.getElementById('filterAirline').value = '';
+    document.getElementById('filterType').value = '';
+    filterTable();
+  }
+</script>
+
+</body>
+</html>
